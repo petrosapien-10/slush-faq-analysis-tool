@@ -5,7 +5,11 @@ export enum CoverageStatus {
 }
 
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  // Prefer VITE_API_BASE_URL (recommended); fall back to legacy VITE_API_URL.
+  BASE_URL:
+    (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
+    (import.meta.env.VITE_API_URL as string | undefined) ||
+    'http://localhost:3001',
   ROUTES: {
     ANALYZE: '/api/analyze',
     FAQS: '/api/faqs',
