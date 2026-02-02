@@ -20,6 +20,11 @@ An AI-powered internal tool that analyzes user questions to identify gaps in exi
 - Frontend: React + Vite + Styled Components; Zustand for state
 - API: `/api/analyze` (analysis), `/api/faqs` (catalog), `/api/questions` (clusters)
 
+## Data Source
+
+- FAQ content used by this tool is sourced from https://slush.org/faq.
+- The dataset is intended for internal analysis and product experiments.
+
 ## Data Flow
 
 1. UI submits question(s)
@@ -38,6 +43,7 @@ An AI-powered internal tool that analyzes user questions to identify gaps in exi
 - Canonicalization: Strict JSON schema output to fix typos/grammar without changing intent (see backend/services/ai/canonicalization.ts)
 - Coverage analysis: JSON schema with `status` and `explanation` (see backend/services/ai/coverage.ts)
 - Deterministic posture: `temperature = 0` for reproducibility; structured outputs via LangChain `response_format`
+- Retrieval-Augmented Generation (RAG): Similar FAQs are retrieved via embeddings with pgvector (see backend/services/clustering/vectorSearch.ts) and used as context for the coverage analysis in [backend/services/ai/coverage.ts](backend/services/ai/coverage.ts).
 
 ## Design Decisions
 
@@ -45,6 +51,7 @@ An AI-powered internal tool that analyzes user questions to identify gaps in exi
 - zod-validated JSON from LangChain for robust parsing
 - Threshold-based canonical regeneration as clusters grow
 - Lightweight normalization to prevent duplicate inflation
+- Simple sorting handled in the frontend UI to reduce complexity; the backend provides pagination (and supports sort params if needed) but the current UI performs sorting client-side.
 
 ## Trade-offs
 
@@ -184,3 +191,12 @@ npm run lint:fix      # auto-fix lint
 
 - Frontend is hosted on Firebase Hosting.
 - Configure `frontend/.env.production` with `VITE_API_BASE_URL` pointing to your deployed backend.
+
+- Backend: deployed using Google Cloud Run (containerized Docker image). We use `gcloud` and Artifact Registry for deployment. After deploy, set the Cloud Run service URL as `VITE_API_BASE_URL` in `frontend/.env.production`.
+
+## Future Enhancements
+
+- Server-side filtering and advanced sorting for large datasets
+- ElasticSearch-powered search track (alternative to pgvector), relevance tuning, and filters
+- AI-powered features: improved canonicalization, agentic workflows, and RAG-style FAQ augmentation
+- Deployment hardening on GCP/containers; CI for tests and linting
