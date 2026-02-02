@@ -21,8 +21,6 @@ async function initDatabase() {
   try {
     const schemaSQL = readFileSync(join(__dirname, 'init.sql'), 'utf-8');
     await client.query(schemaSQL);
-  } catch (error) {
-    throw error;
   } finally {
     client.release();
     await pool.end();
@@ -33,6 +31,6 @@ initDatabase()
   .then(() => {
     process.exit(0);
   })
-  .catch((error) => {
+  .catch((_error) => {
     process.exit(1);
   });

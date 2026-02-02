@@ -20,9 +20,6 @@ async function resetDatabase() {
     
     const sql = readFileSync(join(__dirname, 'init.sql'), 'utf-8');
     await client.query(sql);
-    
-  } catch (error) {
-    throw error;
   } finally {
     client.release();
   }
@@ -35,7 +32,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     .then(() => {
       process.exit(0);
     })
-    .catch((error) => {
+    .catch((_error) => {
       process.exit(1);
     });
 }

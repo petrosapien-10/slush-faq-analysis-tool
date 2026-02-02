@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { query } from '../db/client.js';
 import { generateEmbeddings } from '../services/ai/embedding.js';
-import { findSimilarFAQs, findSimilarCluster } from '../services/clustering/vectorSearch.js';
+import { findSimilarFAQs, findSimilarCluster, type FAQMatch } from '../services/clustering/vectorSearch.js';
 import { determineCoverage } from '../services/ai/coverage.js';
 import { canonicalizeQuestion } from '../services/ai/canonicalization.js';
 import { createCluster, addQuestionsToCluster, regenerateCanonicalQuestion } from '../services/clustering/clusterService.js';
@@ -62,11 +62,14 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         if (!clusterUpdates.has(similarCluster.id)) {
           clusterUpdates.set(similarCluster.id, []);
         }
-        clusterUpdates.get(similarCluster.id)!.push({
-          question,
-          normalizedQuestion,
-          previousUniqueCount,
-        });
+        const updates = clusterUpdates.get(similarCluster.id);
+        if (updates) {
+          updates.push({
+            question,
+            normalizedQuestion,
+            previousUniqueCount,
+          });
+        }
       } else {
         newClusterData.push({
           question,
@@ -119,7 +122,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     
     for (const clusterId of allClusterIds) {
       const clusterData = await query(
-        `SELECT id, topic, canonical_question, coverage_status, coverage_explanation, faq_matches FROM clusters WHERE id = $1`,
+        `SELECT id, canonical_question, coverage_status, coverage_explanation, faq_matches FROM clusters WHERE id = $1`,
         [clusterId]
       );
       
@@ -144,7 +147,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         canonicalQuestion: cluster.canonical_question,
         questionCount: clusterQuestions.length,
         questions: clusterQuestions,
-        faqMatches: faqMatches.map((faq: any) => ({
+        faqMatches: faqMatches.map((faq: FAQMatch) => ({
           question: faq.question,
           answer: faq.answer,
           category: faq.category,

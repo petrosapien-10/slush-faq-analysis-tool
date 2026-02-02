@@ -15,6 +15,7 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL?.includes('neon.tech') ? { rejectUnauthorized: false } : false,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const query = async (text: string, params?: any[]) => {
   const client = await pool.connect();
   try {

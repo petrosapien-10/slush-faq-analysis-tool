@@ -5,12 +5,16 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
     "init-db": "tsx src/db/init.ts",
     "seed": "tsx src/db/seed.ts",
     "reset-db": "tsx src/db/reset.ts",
     "clear-questions": "tsx src/db/clear-questions.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@langchain/core": "^1.1.17",
@@ -30,6 +34,10 @@
     "@types/node": "^22.10.5",
     "@types/pg": "^8.11.10",
     "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "supertest": "^7.2.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",

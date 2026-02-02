@@ -13,8 +13,6 @@ async function clearQuestions() {
   try {
     await query('TRUNCATE TABLE questions RESTART IDENTITY CASCADE');
     await query('TRUNCATE TABLE clusters CASCADE');
-  } catch (error) {
-    throw error;
   } finally {
     await pool.end();
   }

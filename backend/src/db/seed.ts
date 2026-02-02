@@ -255,7 +255,8 @@ async function seedFAQs() {
       
       await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
-      // Silent error handling
+      console.error(`Failed to seed FAQ: "${faq.question}"`, error);
+      throw error;
     }
   }
 }
@@ -265,7 +266,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     .then(() => {
       process.exit(0);
     })
-    .catch((error) => {
+    .catch((_error) => {
       process.exit(1);
     });
 }

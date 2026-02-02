@@ -31,4 +31,7 @@ app.use(API_ROUTES.QUESTIONS, questionsRoutes);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {});
+app.listen(PORT, () => {
+  console.log(`Backend server running on port ${PORT}`);
+  console.log(`Health check available at http://localhost:${PORT}/health`);
+});
