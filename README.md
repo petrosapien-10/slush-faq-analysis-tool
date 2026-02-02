@@ -1,6 +1,7 @@
 # FAQ Coverage Assistant
 
 Live App: https://slush-faq.web.app/
+
 Backend Health Check: https://slush-faq-analysis-tool-571183354240.europe-north2.run.app/health
 
 This project is a prototype that explores how semantic clustering and LLMs can be used to analyze user questions and identify gaps in existing FAQ content. It groups similar questions using embeddings, assesses FAQ coverage (covered, partially covered, not covered), and surfaces structured insights to support internal analysis.
@@ -8,6 +9,8 @@ This project is a prototype that explores how semantic clustering and LLMs can b
 ## Overview
 
 This tool is designed to help teams understand patterns in user questions and evaluate how effectively existing FAQs address real user needs. By clustering semantically similar questions and mapping them against a known FAQ set, it highlights areas that are well-covered, partially covered, or missing entirely.
+
+The system is designed to be extensible and can be integrated into automated pipelines that collect questions from multiple channels (e.g. support tickets, forms, or chat logs) for ongoing analysis.
 
 ## Architecture (PERN)
 
@@ -173,5 +176,5 @@ docker run -e OPENAI_API_KEY=xxx -e DATABASE_URL=postgresql://... -e PORT=8080 -
 
 - Server-side filtering and advanced sorting for large datasets
 - ElasticSearch-powered search track (alternative to pgvector), relevance tuning, and filters
-- AI-powered features: improved canonicalization, agentic workflows, and RAG-style FAQ augmentation
+- AI-powered features: improved canonicalization, agentic workflows, and richer RAG-style FAQ augmentation (e.g. generating suggested FAQ updates or drafts based on uncovered clusters)
 - Extended CI coverage for frontend builds and automated test execution
