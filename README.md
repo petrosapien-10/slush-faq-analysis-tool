@@ -1,5 +1,7 @@
 # FAQ Coverage Assistant
 
+Live App: https://slush-faq.web.app/
+
 An AI-powered internal tool that analyzes user questions to identify gaps in existing FAQ content. It clusters similar questions via embeddings, determines coverage (covered / partially covered / not covered) using an LLM, and surfaces actionable insights.
 
 ## Overview
@@ -69,14 +71,21 @@ Create `.env` (or use `.env.example`):
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
-DATABASE_URL=postgresql://username:password@localhost:5432/faq_coverage
 PORT=3001
 ```
 
-Frontend API base (optional): create `frontend/.env.local` for Vite
+Set `DATABASE_URL` to your SQL database connection string (Postgres + pgvector recommended).
+
+Frontend API base: create `frontend/.env.local` for Vite
 
 ```env
-VITE_API_URL=http://localhost:3001
+VITE_API_BASE_URL=http://localhost:3001
+```
+
+For production builds, set `frontend/.env.production`:
+
+```env
+VITE_API_BASE_URL=https://your-backend.example.com
 ```
 
 Initialize and seed:
@@ -140,10 +149,11 @@ faq-analysis-tool/
 
 ## Environment
 
-- Backend env: `OPENAI_API_KEY`, `DATABASE_URL`, `PORT`
+- Backend: `OPENAI_API_KEY`, `DATABASE_URL`, `PORT`
    - Default port: 3001 (override via `PORT`)
    - pgvector dimensions: 1536 (see [backend/src/config/constants.ts](backend/src/config/constants.ts))
-- Frontend env: `VITE_API_URL` (defaults to `http://localhost:3001`)
+- Frontend: `VITE_API_BASE_URL` (preferred; defaults to `http://localhost:3001`).
+  
 
 ## Database
 
@@ -170,8 +180,7 @@ npm run lint          # check lint
 npm run lint:fix      # auto-fix lint
 ```
 
+## Deploy
 
-
-## License
-
-MIT
+- Frontend is hosted on Firebase Hosting.
+- Configure `frontend/.env.production` with `VITE_API_BASE_URL` pointing to your deployed backend.
