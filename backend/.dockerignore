@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+npm-debug.log
+*.log
+
+# Build output (Docker will rebuild)
+dist
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Tests & tooling
+tests
+coverage
+*.test.ts
+*.spec.ts
+vitest.config.ts
+
+# Editor / OS junk
+.vscode
+.idea
+.DS_Store

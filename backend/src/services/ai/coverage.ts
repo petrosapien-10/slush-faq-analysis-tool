@@ -105,11 +105,11 @@ Respond with JSON with fields: status (one of: covered, partially_covered, not_c
   ]);
 
   // Create chain and invoke
-  const chain = prompt.pipe(llm);
+  const chain = prompt.pipe(llm as any);
   const response = await chain.invoke({
     question,
     faqText,
-  });
+  }) as any;
 
   // Parse the response content
   const content = typeof response.content === 'string' 

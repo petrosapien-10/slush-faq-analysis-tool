@@ -58,8 +58,8 @@ Guidelines:
 Respond with the canonical question in the required JSON format.`],
   ]);
 
-  const chain = prompt.pipe(llm);
-  const response = await chain.invoke({ question });
+  const chain = prompt.pipe(llm as any);
+  const response = await chain.invoke({ question }) as any;
 
   const content = typeof response.content === 'string' 
     ? response.content 
@@ -133,8 +133,8 @@ If questions ask about DIFFERENT things, the canonical question should reflect t
 Respond with the canonical question in the required JSON format.`],
   ]);
 
-  const chain = prompt.pipe(llm);
-  const response = await chain.invoke({ questionsText });
+  const chain = prompt.pipe(llm as any);
+  const response = await chain.invoke({ questionsText }) as any;
 
   const content = typeof response.content === 'string' 
     ? response.content 
