@@ -1,17 +1,13 @@
 # FAQ Coverage Assistant
 
 Live App: https://slush-faq.web.app/
+Backend Health Check: https://slush-faq-analysis-tool-571183354240.europe-north2.run.app/health
 
-An AI-powered internal tool that analyzes user questions to identify gaps in existing FAQ content. It clusters similar questions via embeddings, determines coverage (covered / partially covered / not covered) using an LLM, and surfaces actionable insights.
+This project is a prototype that explores how semantic clustering and LLMs can be used to analyze user questions and identify gaps in existing FAQ content. It groups similar questions using embeddings, assesses FAQ coverage (covered, partially covered, not covered), and surfaces structured insights to support internal analysis.
 
 ## Overview
 
-- Purpose: Understand what users ask, group similar questions, and assess how well FAQs address them.
-- Core capabilities:
-  - Canonicalize questions for consistency
-  - Generate embeddings and perform semantic clustering
-  - Match top FAQs and determine coverage with structured LLM output
-  - Display clusters with counts, matches, and explanations
+This tool is designed to help teams understand patterns in user questions and evaluate how effectively existing FAQs address real user needs. By clustering semantically similar questions and mapping them against a known FAQ set, it highlights areas that are well-covered, partially covered, or missing entirely.
 
 ## Architecture (PERN)
 
@@ -47,17 +43,10 @@ An AI-powered internal tool that analyzes user questions to identify gaps in exi
 
 ## Design Decisions
 
-- pgvector in Postgres for semantic grouping (simple stack, good relevance)
+- pgvector in Postgres for semantic grouping
 - zod-validated JSON from LangChain for robust parsing
 - Threshold-based canonical regeneration as clusters grow
 - Lightweight normalization to prevent duplicate inflation
-- Simple sorting handled in the frontend UI to reduce complexity; the backend provides pagination (and supports sort params if needed) but the current UI performs sorting client-side.
-
-## Trade-offs
-
-- LLM accuracy vs. latency/cost: `gpt-4o-mini`, temperature 0
-- Search simplicity vs. sophistication: pgvector over ElasticSearch
-- Minimal UI to prioritize pipeline clarity
 
 ## Setup
 
@@ -154,14 +143,6 @@ faq-analysis-tool/
         └── api.ts           # backend calls
 ```
 
-## Environment
-
-- Backend: `OPENAI_API_KEY`, `DATABASE_URL`, `PORT`
-   - Default port: 3001 (override via `PORT`)
-   - pgvector dimensions: 1536 (see [backend/src/config/constants.ts](backend/src/config/constants.ts))
-- Frontend: `VITE_API_BASE_URL` (preferred; defaults to `http://localhost:3001`).
-  
-
 ## Database
 
 - Schema and pgvector setup: [backend/src/db/init.sql](backend/src/db/init.sql)
@@ -179,24 +160,18 @@ docker build -t faq-backend ./backend
 docker run -e OPENAI_API_KEY=xxx -e DATABASE_URL=postgresql://... -e PORT=8080 -p 8080:8080 faq-backend
 ```
 
-## Development
-
-```bash
-npm run test          # backend tests
-npm run lint          # check lint
-npm run lint:fix      # auto-fix lint
-```
-
 ## Deploy
 
 - Frontend is hosted on Firebase Hosting.
 - Configure `frontend/.env.production` with `VITE_API_BASE_URL` pointing to your deployed backend.
 
-- Backend: deployed using Google Cloud Run (containerized Docker image). We use `gcloud` and Artifact Registry for deployment. After deploy, set the Cloud Run service URL as `VITE_API_BASE_URL` in `frontend/.env.production`.
+- Backend: deployed on Google Cloud Run as a containerized service. 
+  After deployment, the Cloud Run service URL is used as `VITE_API_BASE_URL` 
+  for the frontend production build.
 
 ## Future Enhancements
 
 - Server-side filtering and advanced sorting for large datasets
 - ElasticSearch-powered search track (alternative to pgvector), relevance tuning, and filters
 - AI-powered features: improved canonicalization, agentic workflows, and RAG-style FAQ augmentation
-- Deployment hardening on GCP/containers; CI for tests and linting
+- Extended CI coverage for frontend builds and automated test execution
