@@ -69,8 +69,14 @@ Create `.env` (or use `.env.example`):
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
-DATABASE_URL=postgresql://username:password@localhost:5432/faq_analysis
+DATABASE_URL=postgresql://username:password@localhost:5432/faq_coverage
 PORT=3001
+```
+
+Frontend API base (optional): create `frontend/.env.local` for Vite
+
+```env
+VITE_API_URL=http://localhost:3001
 ```
 
 Initialize and seed:
@@ -78,6 +84,9 @@ Initialize and seed:
 ```bash
 npm run init-db
 npm run seed
+ # Optional helpers
+ npm run reset-db           # drop + recreate tables, then seed
+ npm run clear-all-questions
 ```
 
 Start development:
@@ -89,11 +98,26 @@ npm run dev:backend    # http://localhost:3001
 npm run dev:frontend   # http://localhost:5173
 ```
 
+Backend health check: http://localhost:3001/health
+
 ## Usage
 
 - Open http://localhost:5173
 - Enter a question and click Analyze
 - Review clusters, coverage status, explanations, and FAQ matches
+
+### API Endpoints
+
+- Analyze: POST [backend/src/routes/analyze.ts](backend/src/routes/analyze.ts) at `/api/analyze`
+   - Body: JSON array of strings (questions)
+   - Response: `{ clusters: ClusterResult[] }`
+- FAQs: GET [backend/src/routes/faqs.ts](backend/src/routes/faqs.ts) at `/api/faqs`
+   - Response: `{ faqs: FAQ[] }`
+- Clusters: GET [backend/src/routes/questions.ts](backend/src/routes/questions.ts) at `/api/questions`
+   - Query: `page`, `limit`, `sortBy` (`createdAt`|`totalAsks`), `order` (`asc`|`desc`)
+   - Response: `{ clusters: StoredCluster[], pagination }`
+
+See request typings in [frontend/src/api.ts](frontend/src/api.ts). Route constants: [backend/src/config/constants.ts](backend/src/config/constants.ts).
 
 ## Project Structure
 
@@ -112,6 +136,30 @@ faq-analysis-tool/
         ├── components/      # views
         ├── store/           # state
         └── api.ts           # backend calls
+```
+
+## Environment
+
+- Backend env: `OPENAI_API_KEY`, `DATABASE_URL`, `PORT`
+   - Default port: 3001 (override via `PORT`)
+   - pgvector dimensions: 1536 (see [backend/src/config/constants.ts](backend/src/config/constants.ts))
+- Frontend env: `VITE_API_URL` (defaults to `http://localhost:3001`)
+
+## Database
+
+- Schema and pgvector setup: [backend/src/db/init.sql](backend/src/db/init.sql)
+- Seed FAQ catalog: [backend/src/db/seed.ts](backend/src/db/seed.ts)
+- Reset DB (drop/recreate + seed): [backend/src/db/reset.ts](backend/src/db/reset.ts)
+- Clear only questions: [backend/src/db/clear-questions.ts](backend/src/db/clear-questions.ts)
+
+## Docker (Backend)
+
+- Dockerfile: [backend/Dockerfile](backend/Dockerfile)
+- Uses `PORT` env (Cloud Run defaults to 8080). Example:
+
+```bash
+docker build -t faq-backend ./backend
+docker run -e OPENAI_API_KEY=xxx -e DATABASE_URL=postgresql://... -e PORT=8080 -p 8080:8080 faq-backend
 ```
 
 ## Development
